@@ -103,13 +103,18 @@ class Model(nn.Module):
         self.vgg_encoder = VGGEncoder()
         self.decoder = Decoder()
 
-    def generate(self, content_images, style_images, alpha=1.0):
-        content_features = self.vgg_encoder(content_images, output_last_feature=True)
-        style_features = self.vgg_encoder(style_images, output_last_feature=True)
+    def generate_feature(self, images) :
+        return self.vgg_encoder(images, output_last_feature=True)
+
+    def combine_features(self, content_features, style_features, alpha=1.0) :
         t = adain(content_features, style_features)
         t = alpha * t + (1 - alpha) * content_features
-        out = self.decoder(t)
-        return out
+        return self.decoder(t)
+
+    def generate(self, content_images, style_images, alpha=1.0):
+        return self.combine_features(*map(self.generate_feature, (
+            content_images, style_images
+        )), alpha)
 
     @staticmethod
     def calc_content_loss(out_features, t):
