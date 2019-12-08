@@ -22,9 +22,11 @@ class adain :
         self.style = normalize(style_tensor).unsqueeze(0).to(device)
 
     # Tensor -> Tensor
-    def __call__(self, content_tensor) :
+    def __call__(self, contents) :
+        ret = []
         with torch.no_grad() :
-            c_tensor = normalize(content_tensor).unsqueeze(0).to(self.device)
-            sys.stdout.flush()
-            result = self.model.generate(c_tensor, self.style)
-            return denorm(result, self.device)
+            for content_tensor in contents :
+                c_tensor = normalize(content_tensor).unsqueeze(0).to(self.device)
+                result = self.model.generate(c_tensor, self.style)
+                ret.append(denorm(result, self.device).squeeze(0).to('cpu'))
+        return ret

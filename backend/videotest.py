@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import torch
+import numpy as np
 import cv2 as cv
 import torchvision.transforms as xfrm
 from PIL import Image
@@ -8,6 +9,40 @@ import math
 import argparse
 from tqdm import tqdm
 from adain import adain
+
+class VideoReader :
+    def __init__(self, filename) :
+        cap = cv.VideoCapture(filename)
+        self.size = (
+            int(cap.get(cv.CAP_PROP_FRAME_WIDTH)),
+            int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+        )
+        self.length = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
+        self.fps = math.ceil(cap.get(cv.CAP_PROP_FPS))
+        self._cap = cap
+
+    def read(self, nr_frame = -1) :
+        cap = self._cap
+        video = []
+        while nr_frame and cap.isOpened() :
+            ret, frame = cap.read()
+            if not ret : break
+            frame = torch.tensor(frame)
+            frame = frame.permute(2, 0, 1).float() / 256.0 + 1.0 / 512.0
+            video.append(frame)
+            nr_frame -= 1
+        return video
+
+class VideoWriter :
+    def __init__(self, filename, fps, size, fourcc='mp4v') :
+        writer = cv.VideoWriter(filename, cv.VideoWriter_fourcc(*fourcc), fps, size)
+        self._writer = writer
+
+    def write(self, video) :
+        writer = self._writer
+        for frame in video :
+            frame = (frame * 256.0).permute(1, 2, 0).to(torch.uint8)
+            writer.write(np.array(frame))
 
 def parse_args() :
     parser = argparse.ArgumentParser(description='AdaIN Video Style Trasfer')
@@ -27,21 +62,19 @@ def parse_args() :
 
 def main() :
     args = parse_args()
-    video, _, info = read_video(args.content, pts_unit='sec')
     if torch.cuda.is_available() and args.gpu >= 0:
         device = torch.device(f'cuda:{args.gpu}')
         print(f'# CUDA available: {torch.cuda.get_device_name(0)}')
     else:
         device = 'cpu'
-    print(info)
-    video = video.permute(0, 3, 1, 2).float() / 256.0 + 1.0 / 512.0
-    transformer = adain('model_state.pth', xfrm.ToTensor()(Image.open(args.style)), device)
-    result = video
-    nframe = video.shape[0]
-    for i in tqdm(range(nframe)) :
-        result[i] = transformer(video[i])
-    result = (result * 256.0).permute(0, 2, 3, 1).to(torch.uint8)
-    write_video(args.output_name, result, math.ceil(info['video_fps']))
+    transformer = adain(args.model_state_path, xfrm.ToTensor()(Image.open(args.style)), device)
+    print(f'# model state loaded from "{args.model_state_path}"')
+    reader = VideoReader(args.content)
+    writer = VideoWriter(args.output_name, reader.fps, reader.size)
+    batch_size = 4
+    for _ in tqdm(range(0, reader.length, batch_size)) :
+        result = transformer(reader.read(batch_size))
+        writer.write(result)
 
 if __name__ == '__main__' :
     main()
