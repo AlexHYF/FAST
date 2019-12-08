@@ -32,6 +32,18 @@ Anaconda environment recommended here!
 
 ------
 
+## video test
+
+1. Download the pretrained model [here](https://drive.google.com/file/d/1aTS_O3FfLzq5peh20vbWfU4kNAnng6UT/view?usp=sharing)
+
+2. Prepare the content video and the style image.
+
+3. Generate the output video.
+
+``` python
+python videotest -c video.mp4 -s style.jpg -o result.mp4
+```
+
 ## test
 
 1. Clone this repository 
@@ -92,72 +104,6 @@ Anaconda environment recommended here!
                    [--save_dir SAVE_DIR]
                    [--reuse REUSE]
    ```
-
-   
-
-## Result
-
-Some results will be shown here.
-
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_03_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_04_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_05_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_088_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_101308_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_10_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_1348_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_1_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_27_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_3314_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_876_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_8_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_antimonocromatismo_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_asheville_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_brick1_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_brick_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_bridge_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_brushstrokers_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_candy_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_charles-reid-art-04_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_composition_vii_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_contrast_of_forms_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_en_campo_gris_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_escher_sphere_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_feathers_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_flower_of_life_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_frida_kahlo_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_horse_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_hosi_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_house_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_hs6_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_impronte_d_artista_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_in1_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_in2_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_la_muse_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_mondrian_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_mosaic_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_mosaic_ducks_massimo_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_news1_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_picasso_seated_nude_hr_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_plum_flower_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_rain-princess_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_Robert_Delaunay_1906_Portrait_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_scene_de_rue_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_seated-nude_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_shipwreck_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_sketch_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_stars2_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_strip_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_Sunset_in_Venice_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_the_resevoir_at_poitiers_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_trial_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_udnie_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_wave_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_woman_in_peasant_dress_cropped_demo.jpg)
-![image](https://github.com/irasin/Pytorch_Adain_from_scratch/blob/master/res/IMG_0565_woman_with_hat_matisse_demo.jpg)
-
-
-
 
 ## References
 
