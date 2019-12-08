@@ -46,6 +46,8 @@ class VideoWriter :
 
 def parse_args() :
     parser = argparse.ArgumentParser(description='AdaIN Video Style Trasfer')
+    parser.add_argument('--batch_size', '-b', type=int, default=4,
+                        help='Transform batch size')
     parser.add_argument('--content', '-c', type=str, default=None, required=True,
                         help='Content video path, e.g. content.mp4')
     parser.add_argument('--style', '-s', type=str, default=None, required=True,
@@ -71,7 +73,7 @@ def main() :
     print(f'# model state loaded from "{args.model_state_path}"')
     reader = VideoReader(args.content)
     writer = VideoWriter(args.output_name, reader.fps, reader.size)
-    batch_size = 4
+    batch_size = args.batch_size
     for _ in tqdm(range(0, reader.length, batch_size)) :
         result = transformer(reader.read(batch_size))
         writer.write(result)
