@@ -50,6 +50,8 @@ def parse_args() :
                         help='Transform batch size')
     parser.add_argument('--content', '-c', type=str, default=None, required=True,
                         help='Content video path, e.g. content.mp4')
+    parser.add_argument('--fourcc', '-f', type=str, default='XVID',
+                        help='Four character code for codec')
     parser.add_argument('--style', '-s', type=str, default=None, required=True,
                         help='Style image path, e.g. style.jpg')
     parser.add_argument('--output_name', '-o', type=str, default=None, required=True,
