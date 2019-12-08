@@ -34,7 +34,7 @@ class VideoReader :
         return video
 
 class VideoWriter :
-    def __init__(self, filename, fps, size, fourcc='mp4v') :
+    def __init__(self, filename, fps, size, fourcc='XVID') :
         writer = cv.VideoWriter(filename, cv.VideoWriter_fourcc(*fourcc), fps, size)
         self._writer = writer
 
