@@ -5,6 +5,7 @@ import sys
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
+                                 
 def denorm(tensor, device):
     std = torch.Tensor([0.229, 0.224, 0.225]).reshape(-1, 1, 1).to(device)
     mean = torch.Tensor([0.485, 0.456, 0.406]).reshape(-1, 1, 1).to(device)

@@ -13,7 +13,6 @@ from torchvision.utils import save_image
 from dataset import PreprocessDataset, denorm
 from model import Model
 
-
 def main():
     parser = argparse.ArgumentParser(description='AdaIN Style Transfer by Pytorch')
     parser.add_argument('--batch_size', '-b', type=int, default=8,
