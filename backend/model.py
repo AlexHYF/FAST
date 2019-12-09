@@ -1,6 +1,8 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models import vgg19
+import sys
 
 def calc_mean_std(features):
     """
@@ -97,8 +99,8 @@ class Decoder(nn.Module):
         return h
 
 
-class Model(nn.Module):
-    def __init__(self):
+class Model(nn.Module) :
+    def __init__(self) :
         super().__init__()
         self.vgg_encoder = VGGEncoder()
         self.decoder = Decoder()
@@ -111,17 +113,17 @@ class Model(nn.Module):
         t = alpha * t + (1 - alpha) * content_features
         return self.decoder(t)
 
-    def generate(self, content_images, style_images, alpha=1.0):
+    def generate(self, content_images, style_images, alpha=1.0) :
         return self.combine_features(*map(self.generate_feature, (
             content_images, style_images
         )), alpha)
 
     @staticmethod
-    def calc_content_loss(out_features, t):
+    def calc_content_loss(out_features, t) :
         return F.mse_loss(out_features, t)
 
     @staticmethod
-    def calc_style_loss(content_middle_features, style_middle_features):
+    def calc_style_loss(content_middle_features, style_middle_features) :
         loss = 0
         for c, s in zip(content_middle_features, style_middle_features):
             c_mean, c_std = calc_mean_std(c)
@@ -129,18 +131,25 @@ class Model(nn.Module):
             loss += F.mse_loss(c_mean, s_mean) + F.mse_loss(c_std, s_std)
         return loss
 
-    def forward(self, content_images, style_images, alpha=1.0, lam=10):
+    @staticmethod
+    def calc_temporal_loss(out, optical_flow) :
+        warpped = F.grid_sample(out[:-1], optical_flow, padding_mode='border')
+        loss = F.mse_loss(warpped, out[1:])
+        return loss
+
+    def forward(self, content_images, style_image, optical_flow, alpha=1.0, lam1=10.0, lam2=1000.0) :
         content_features = self.vgg_encoder(content_images, output_last_feature=True)
-        style_features = self.vgg_encoder(style_images, output_last_feature=True)
+        style_features = self.vgg_encoder(style_image, output_last_feature=True)
         t = adain(content_features, style_features)
         t = alpha * t + (1 - alpha) * content_features
         out = self.decoder(t)
 
         output_features = self.vgg_encoder(out, output_last_feature=True)
         output_middle_features = self.vgg_encoder(out, output_last_feature=False)
-        style_middle_features = self.vgg_encoder(style_images, output_last_feature=False)
+        style_middle_features = self.vgg_encoder(style_image, output_last_feature=False)
 
         loss_c = self.calc_content_loss(output_features, t)
         loss_s = self.calc_style_loss(output_middle_features, style_middle_features)
-        loss = loss_c + lam * loss_s
+        loss_t = self.calc_temporal_loss(out, optical_flow)
+        loss = loss_c + lam1 * loss_s + lam2 * loss_t
         return loss

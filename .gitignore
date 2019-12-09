@@ -1,3 +1,6 @@
+# numpy data file
+*.npy
+
 # IDE 
 .vscode
 

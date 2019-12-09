@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 import os
@@ -10,7 +11,7 @@ import torch
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
-from dataset import PreprocessDataset, denorm
+from dataset import Dataset
 from model import Model
 
 def main():
@@ -23,19 +24,17 @@ def main():
                         help='GPU ID(nagative value indicate CPU)')
     parser.add_argument('--learning_rate', '-lr', type=int, default=5e-5,
                         help='learning rate for Adam')
-    parser.add_argument('--snapshot_interval', type=int, default=1000,
-                        help='Interval of snapshot to generate image')
-    parser.add_argument('--train_content_dir', type=str, default='content',
+    parser.add_argument('--train_content_dir', type=str, default='dataset/train',
                         help='content images directory for train')
     parser.add_argument('--train_style_dir', type=str, default='style',
                         help='style images directory for train')
-    parser.add_argument('--test_content_dir', type=str, default='content',
+    parser.add_argument('--test_content_dir', type=str, default='dataset/test',
                         help='content images directory for test')
     parser.add_argument('--test_style_dir', type=str, default='style',
                         help='style images directory for test')
-    parser.add_argument('--save_dir', type=str, default='result',
+    parser.add_argument('--save_dir', type=str, default='model',
                         help='save directory for result and loss')
-    parser.add_argument('--reuse', default=None,
+    parser.add_argument('--reuse', default='model_state.pth',
                         help='model state path to load for reuse')
 
     args = parser.parse_args()
@@ -46,12 +45,10 @@ def main():
 
     loss_dir = f'{args.save_dir}/loss'
     model_state_dir = f'{args.save_dir}/model_state'
-    image_dir = f'{args.save_dir}/image'
 
     if not os.path.exists(loss_dir):
         os.mkdir(loss_dir)
         os.mkdir(model_state_dir)
-        os.mkdir(image_dir)
 
     # set device on GPU if available, else CPU
     if torch.cuda.is_available() and args.gpu >= 0:
@@ -60,54 +57,39 @@ def main():
     else:
         device = 'cpu'
 
-    print(f'# Minibatch-size: {args.batch_size}')
     print(f'# epoch: {args.epoch}')
     print('')
 
     # prepare dataset and dataLoader
-    train_dataset = PreprocessDataset(args.train_content_dir, args.train_style_dir)
-    test_dataset = PreprocessDataset(args.test_content_dir, args.test_style_dir)
+    train_dataset = Dataset(args.train_content_dir, args.train_style_dir)
     iters = len(train_dataset)
-    print(f'Length of train image pairs: {iters}')
-
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
-    test_iter = iter(test_loader)
+    print(f'Length of train video/style pairs: {iters}')
 
     # set model and optimizer
     model = Model().to(device)
     if args.reuse is not None:
         model.load_state_dict(torch.load(args.reuse))
+        print(f'# model path file "{args.reuse}" loaded')
     optimizer = Adam(model.parameters(), lr=args.learning_rate)
 
     # start training
+    batch_size = args.batch_size
     loss_list = []
     for e in range(1, args.epoch + 1):
         print(f'Start {e} epoch')
-        for i, (content, style) in tqdm(enumerate(train_loader, 1)):
-            content = content.to(device)
+        for i, (content_video, style, optical_flow) in enumerate(train_dataset, 1) :
             style = style.to(device)
-            loss = model(content, style)
-            loss_list.append(loss.item())
-
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            print(f'[{e}/total {args.epoch} epoch],[{i} /'
-                  f'total {round(iters/args.batch_size)} iteration]: {loss.item()}')
-
-            if i % args.snapshot_interval == 0:
-                content, style = next(test_iter)
-                content = content.to(device)
-                style = style.to(device)
-                with torch.no_grad():
-                    out = model.generate(content, style)
-                content = denorm(content, device)
-                style = denorm(style, device)
-                out = denorm(out, device)
-                res = torch.cat([content, style, out], dim=0)
-                res = res.to('cpu')
-                save_image(res, f'{image_dir}/{e}_epoch_{i}_iteration.png', nrow=args.batch_size)
+            for chunk in tqdm(range(0, content_video.shape[0] - batch_size, batch_size)) :
+                content = content_video[chunk:chunk+batch_size].contiguous().to(device)
+                flow = optical_flow[chunk:chunk+batch_size-1].contiguous().to(device)
+                loss = model(content, style, flow)
+                loss_list.append(loss.item())
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+            print(f'[{e}/{args.epoch} epoch], '
+                  f'[{i} /{len(train_dataset)} iteration]: {loss.item()}')
+        train_dataset.shuffle()
         torch.save(model.state_dict(), f'{model_state_dir}/{e}_epoch.pth')
     plt.plot(range(len(loss_list)), loss_list)
     plt.xlabel('iteration')
