@@ -94,7 +94,10 @@ def main():
                 loss.backward()
                 optimizer.step()
             print(f'[{e}/{args.epoch} epoch], '
-                  f'[{i} /{len(train_dataset)} iteration]: {loss.item()}')
+                  f'[{i}/{len(train_dataset)} iteration]:', 
+                  'Lc=%.3f, Ls=%.3f, Lt=%.3f'
+                   % (model.loss_c, model.loss_s, model.loss_t))
+            model.clear_loss()
         train_dataset.shuffle()
         torch.save(model.state_dict(), f'{model_state_dir}/{e}_epoch.pth')
     plt.plot(range(len(loss_list)), loss_list)

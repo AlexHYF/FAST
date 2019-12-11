@@ -104,6 +104,7 @@ class Model(nn.Module) :
         super().__init__()
         self.vgg_encoder = VGGEncoder()
         self.decoder = Decoder()
+        self.clear_loss()
 
     def generate_feature(self, images) :
         return self.vgg_encoder(images, output_last_feature=True)
@@ -133,11 +134,15 @@ class Model(nn.Module) :
 
     @staticmethod
     def calc_temporal_loss(out, optical_flow) :
+        nframe = out.shape[0]
         warpped = F.grid_sample(out[:-1], optical_flow, padding_mode='border')
-        loss = F.mse_loss(warpped, out[1:])
+        loss = F.mse_loss(warpped, out[1:]) * nframe / (nframe - 1)
         return loss
 
-    def forward(self, content_images, style_image, optical_flow, alpha=1.0, lam1=10.0, lam2=1000.0) :
+    def clear_loss(self) :
+        self.loss_c = self.loss_s = self.loss_t = 0.0
+
+    def forward(self, content_images, style_image, optical_flow, alpha=1.0, lam1=10.0, lam2=10000.0) :
         content_features = self.vgg_encoder(content_images, output_last_feature=True)
         style_features = self.vgg_encoder(style_image, output_last_feature=True)
         t = adain(content_features, style_features)
@@ -151,5 +156,8 @@ class Model(nn.Module) :
         loss_c = self.calc_content_loss(output_features, t)
         loss_s = self.calc_style_loss(output_middle_features, style_middle_features)
         loss_t = self.calc_temporal_loss(out, optical_flow)
+        self.loss_c += loss_c.item()
+        self.loss_s += loss_s.item() * lam1
+        self.loss_t += loss_t.item() * lam2
         loss = loss_c + lam1 * loss_s + lam2 * loss_t
         return loss
