@@ -8,11 +8,15 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import torch
+from torchvision import transforms
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
 from dataset import Dataset
 from model import Model
+
+normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
 
 def main():
     parser = argparse.ArgumentParser(description='AdaIN Style Transfer by Pytorch')
@@ -79,6 +83,8 @@ def main():
         print(f'Start {e} epoch')
         for i, (content_video, style, optical_flow) in enumerate(train_dataset, 1) :
             style = style.to(device)
+            for id in range(content_video.shape[0]) :
+                content_video[id] = normalize(content_video[id])
             for chunk in tqdm(range(0, content_video.shape[0] - batch_size, batch_size)) :
                 content = content_video[chunk:chunk+batch_size].contiguous().to(device)
                 flow = optical_flow[chunk:chunk+batch_size-1].contiguous().to(device)
