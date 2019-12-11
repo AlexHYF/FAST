@@ -22,7 +22,7 @@ class Dataset :
         print(f'loading ({content_video}, {style_image})')
         optical_flow = torch.from_numpy(np.load(os.path.splitext(content_video)[0] + '.npy'))
         content_video = torch.stack(VideoReader(content_video).read())
-        style_image = transforms.ToTensor()(Image.open(style_image)).unsqueeze(0)
+        style_image = transforms.ToTensor()(Image.open(style_image))
         return content_video, style_image, optical_flow.to(torch.float32)
     
     def shuffle(self) :

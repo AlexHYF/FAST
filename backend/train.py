@@ -82,7 +82,7 @@ def main():
     for e in range(1, args.epoch + 1):
         print(f'Start {e} epoch')
         for i, (content_video, style, optical_flow) in enumerate(train_dataset, 1) :
-            style = style.to(device)
+            style = normalize(style).repeat(batch_size, *([1] * len(style.shape))).to(device)
             for id in range(content_video.shape[0]) :
                 content_video[id] = normalize(content_video[id])
             for chunk in tqdm(range(0, content_video.shape[0] - batch_size, batch_size)) :
