@@ -142,7 +142,7 @@ class Model(nn.Module) :
     def clear_loss(self) :
         self.loss_c = self.loss_s = self.loss_t = 0.0
 
-    def forward(self, content_images, style_image, optical_flow, alpha=1.0, lam1=10.0, lam2=1000.0) :
+    def forward(self, content_images, style_image, optical_flow, alpha=1.0, lam1=1.0, lam2=1000.0) :
         content_features = self.vgg_encoder(content_images, output_last_feature=True)
         style_features = self.vgg_encoder(style_image, output_last_feature=True)
         t = adain(content_features, style_features)
