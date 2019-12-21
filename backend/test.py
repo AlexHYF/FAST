@@ -34,7 +34,7 @@ def main() :
         print(f'# CUDA available: {torch.cuda.get_device_name(0)}')
     else:
         device = 'cpu'
-    transformer = AdaIN(args.model_state_path, ToTensor()(Image.open(args.style)), device)
+    transformer = AdaIN(args.model_state_path, ToTensor()(Image.open(args.style)), args.alpha, device)
     print(f'# model state loaded from "{args.model_state_path}"')
     reader = VideoReader(args.content)
     writer = VideoWriter(args.output_name, reader.fps)

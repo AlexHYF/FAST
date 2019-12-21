@@ -13,12 +13,13 @@ def denorm(tensor, device):
     return res
 
 class AdaIN :
-    def __init__(self, model_path, style_tensor, device='cpu') :
+    def __init__(self, model_path, style_tensor, alpha=1.0, device='cpu') :
         model = Model()
         model.load_state_dict(torch.load(model_path, map_location=lambda storage, loc: storage))
         model = model.to(device)
         self.device = device
         self.model = model
+        self.alpha = alpha
         self.style_feature = model.generate_feature(normalize(style_tensor).unsqueeze(0).to(self.device))
 
     # Tensor -> Tensor
@@ -27,6 +28,6 @@ class AdaIN :
         with torch.no_grad() :
             for content_tensor in contents :
                 content_feature = self.model.generate_feature(normalize(content_tensor).unsqueeze(0).to(self.device))
-                result = self.model.combine_features(content_feature, self.style_feature)
+                result = self.model.combine_features(content_feature, self.style_feature, self.alpha)
                 ret.append(denorm(result, self.device).squeeze(0).to('cpu'))
         return ret
