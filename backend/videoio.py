@@ -40,6 +40,7 @@ class VideoWriter :
     def write(self, video) :
         for frame in video :
             if not self.__writer : self.__init_writer((frame.shape[2], frame.shape[1]))
+            frame = (frame - frame.min()) / (frame.max() - frame.min() + 1e-6)
             frame = (frame * 256.0).permute(1, 2, 0).to(torch.uint8)
             self.__writer.write(np.array(frame))
 
